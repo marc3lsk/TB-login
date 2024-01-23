@@ -1,19 +1,35 @@
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { TextField, Button } from "@mui/material";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-interface IFormInputs {
+type LoginFormInputs = {
   email: string;
   password: string;
-}
+};
+
+const messages = {
+  required: "Povinný údaj",
+  email: "Nesprávny formát emailu",
+  passwordMin: ({ min }: { min: number }) =>
+    `Heslo musí mať aspoň ${min} znakov`,
+};
+
+const schema = yup
+  .object({
+    email: yup.string().required(messages.required).email(messages.email),
+    password: yup
+      .string()
+      .required(messages.required)
+      .min(5, messages.passwordMin),
+  })
+  .required();
 
 export default function App() {
-  const { handleSubmit, control, formState } = useForm<IFormInputs>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  const { handleSubmit, control, formState } = useForm<LoginFormInputs>({
+    resolver: yupResolver(schema),
   });
-  const onSubmit: SubmitHandler<IFormInputs> = (data) =>
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) =>
     console.info({ ...data });
 
   return (
@@ -39,9 +55,9 @@ export default function App() {
               />
             )}
           />
-          {formState.errors.email?.type === "required" && (
+          {!!formState.errors.email && (
             <p role="alert" className="text-red-500">
-              Povinný údaj
+              {formState.errors.email.message}
             </p>
           )}
         </div>
@@ -61,13 +77,13 @@ export default function App() {
               />
             )}
           />
-          {formState.errors.password?.type === "required" && (
+          {!!formState.errors.password && (
             <p role="alert" className="text-red-500">
-              Povinný údaj
+              {formState.errors.password.message}
             </p>
           )}
         </div>
-        <Button type="submit" variant="contained">
+        <Button type="submit" variant="contained" size="large">
           Prihlásiť
         </Button>
       </form>
