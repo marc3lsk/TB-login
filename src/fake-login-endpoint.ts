@@ -1,11 +1,11 @@
 import { InternalAxiosRequestConfig } from "axios";
 
 const fakeLoginEndpoint = (
-  config: InternalAxiosRequestConfig<any>,
+  config: InternalAxiosRequestConfig<unknown>,
   email: string,
   password: string,
 ) => {
-  return new Promise<InternalAxiosRequestConfig<any>>((resolve, reject) => {
+  return new Promise<InternalAxiosRequestConfig<unknown>>((resolve, reject) => {
     if (email === "test@tb.sk" && password === "12345") {
       resolve({
         url: "/",
