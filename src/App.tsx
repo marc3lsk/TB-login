@@ -1,8 +1,10 @@
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Alert } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./App.scss";
+import apiClient from "./api-client";
+import { useMutation } from "@tanstack/react-query";
 
 type LoginFormInputs = {
   email: string;
@@ -28,10 +30,18 @@ const schema = yup
 
 export default function App() {
   const { handleSubmit, control, formState } = useForm<LoginFormInputs>({
+    defaultValues: { email: "", password: "" },
     resolver: yupResolver(schema),
   });
-  const onSubmit: SubmitHandler<LoginFormInputs> = (data) =>
+
+  const postLogin = useMutation({
+    mutationFn: (data: LoginFormInputs) => apiClient.post("/login", data),
+  });
+
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     console.info({ ...data });
+    await postLogin.mutateAsync(data);
+  };
 
   return (
     <div className="login max-w-xs mx-auto p-4 min-h-screen justify-center flex flex-col">
@@ -84,6 +94,10 @@ export default function App() {
             </p>
           )}
         </div>
+        {postLogin.isSuccess && <Alert severity="success">OK</Alert>}
+        {postLogin.isError && (
+          <Alert severity="error">Neúspešné prihlásenie</Alert>
+        )}
         <Button type="submit" variant="contained" size="large">
           Prihlásiť
         </Button>
