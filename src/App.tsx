@@ -2,6 +2,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { TextField, Button } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import "./App.scss";
 
 type LoginFormInputs = {
   email: string;
@@ -33,7 +34,7 @@ export default function App() {
     console.info({ ...data });
 
   return (
-    <div className="max-w-xs mx-auto p-4 min-h-screen justify-center flex flex-col">
+    <div className="login max-w-xs mx-auto p-4 min-h-screen justify-center flex flex-col">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
